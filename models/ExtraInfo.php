@@ -1,0 +1,103 @@
+<?php
+
+namespace app\models;
+
+use Yii;
+
+/**
+ * This is the model class for table "extra_info".
+ *
+ * @property int $id รหัสข้อมูลเพิ่มเติม
+ * @property string $name ชื่อข้อมูลเพิ่มเติม
+ * @property int $deleted 0=ใช้งาน,1=ไม่ใช้งาน
+ * @property int $created_by สร้างโดย
+ * @property string $created_at สร้างเมื่อ
+ * @property int $updated_by ปรับปรุงโดย
+ * @property string $updated_at ปรับปรุงเมื่อ
+ *
+ * @property User $createdBy
+ * @property User $updatedBy
+ * @property SubmissionExtraInfo[] $submissionExtraInfos
+ * @property SubmissionTypeExtraInfo[] $submissionTypeExtraInfos
+ */
+class ExtraInfo extends \yii\db\ActiveRecord
+{
+    /**
+     * @inheritdoc
+     */
+    public static function tableName()
+    {
+        return 'extra_info';
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function rules()
+    {
+        return [
+            [['deleted', 'created_by', 'updated_by'], 'integer'],
+            [['created_at', 'updated_at'], 'safe'],
+            [['name'], 'string', 'max' => 255],
+            [['created_by'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['created_by' => 'id']],
+            [['updated_by'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['updated_by' => 'id']],
+        ];
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function attributeLabels()
+    {
+        return [
+            'id' => Yii::t('app', 'รหัสข้อมูลเพิ่มเติม'),
+            'name' => Yii::t('app', 'ชื่อข้อมูลเพิ่มเติม'),
+            'deleted' => Yii::t('app', '0=ใช้งาน,1=ไม่ใช้งาน'),
+            'created_by' => Yii::t('app', 'สร้างโดย'),
+            'created_at' => Yii::t('app', 'สร้างเมื่อ'),
+            'updated_by' => Yii::t('app', 'ปรับปรุงโดย'),
+            'updated_at' => Yii::t('app', 'ปรับปรุงเมื่อ'),
+        ];
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getCreatedBy()
+    {
+        return $this->hasOne(User::className(), ['id' => 'created_by']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getUpdatedBy()
+    {
+        return $this->hasOne(User::className(), ['id' => 'updated_by']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getSubmissionExtraInfos()
+    {
+        return $this->hasMany(SubmissionExtraInfo::className(), ['extra_info_id' => 'id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getSubmissionTypeExtraInfos()
+    {
+        return $this->hasMany(SubmissionTypeExtraInfo::className(), ['extra_info_id' => 'id']);
+    }
+
+    /**
+     * @inheritdoc
+     * @return ExtraInfoQuery the active query used by this AR class.
+     */
+    public static function find()
+    {
+        return new ExtraInfoQuery(get_called_class());
+    }
+}

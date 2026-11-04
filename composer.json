@@ -1,0 +1,98 @@
+{
+    "name": "yiisoft/yii2-app-basic",
+    "description": "Yii 2 Basic Project Template",
+    "keywords": ["yii2", "framework", "basic", "project template"],
+    "homepage": "http://www.yiiframework.com/",
+    "type": "project",
+    "license": "BSD-3-Clause",
+    "support": {
+        "issues": "https://github.com/yiisoft/yii2/issues?state=open",
+        "forum": "http://www.yiiframework.com/forum/",
+        "wiki": "http://www.yiiframework.com/wiki/",
+        "irc": "irc://irc.freenode.net/yii",
+        "source": "https://github.com/yiisoft/yii2"
+    },
+    "minimum-stability": "stable",
+    "require": {
+        "php": ">=8.1",
+        "yiisoft/yii2": "~2.0.5",
+        "yiisoft/yii2-bootstrap": "~2.0.0",
+        "yiisoft/yii2-swiftmailer": "~2.0.0",
+        "kartik-v/yii2-widgets": "*",
+        "kartik-v/yii2-date-range": "dev-master",
+        "kartik-v/yii2-datecontrol": "dev-master",
+        "kartik-v/yii2-widget-datepicker": "dev-master",
+        "kartik-v/yii2-dialog": "*",
+        "npm-asset/numeral": "*",
+        "dixonsatit/yii2-thai-year-formatter": "*",
+        "johnitvn/yii2-rbac-plus": "*",
+        "kartik-v/yii2-field-range": "*",
+        "bower-asset/floatthead": "*",
+        "phpoffice/phpword": "^1.4",
+        "cetver/yii2-language-selector": "^1.0",
+        "cetver/yii2-languages-dispatcher": "^1.0",
+        "bedezign/yii2-audit": "^1.0",
+        "bajadev/yii2-ckeditor": "*",
+        "kartik-v/yii2-mpdf": "dev-master",
+        "kartik-v/yii2-grid": "*",
+        "kartik-v/yii2-export": "*",
+        "bower-asset/hotkeysjs": "^3.1",
+        "bower-asset/moment": "^2.24",
+        "philippfrenzel/yii2fullcalendar": "2.1.1",
+        "miloschuman/yii2-highcharts-widget": "*",
+        "alexandernst/yii2-device-detect": "^0.0.12",
+        "lcobucci/jwt": "^5.4",
+        "bower-asset/tableexport.js": "^5.2",
+        "guzzlehttp/guzzle": "^7.4"
+    },
+    "require-dev": {
+        "yiisoft/yii2-debug": "~2.0.0",
+        "yiisoft/yii2-gii": "~2.0.0",
+        "yiisoft/yii2-faker": "~2.0.0"
+    },
+    "autoload": {
+        "classmap": [
+            "vendor/phpdocx/Classes/Phpdocx"
+        ]
+    },
+    "config": {
+        "process-timeout": 1800,
+        "platform": {
+            "php": "8.3"
+        },
+        "allow-plugins": {
+            "yiisoft/yii2-composer": true
+        }
+    },
+    "scripts": {
+        "post-install-cmd": [
+            "yii\\composer\\Installer::postInstall"
+        ],
+        "post-create-project-cmd": [
+            "yii\\composer\\Installer::postCreateProject",
+            "yii\\composer\\Installer::postInstall"
+        ]
+    },
+    "extra": {
+        "yii\\composer\\Installer::postCreateProject": {
+            "setPermission": [
+                {
+                    "runtime": "0777",
+                    "web/assets": "0777",
+                    "yii": "0755"
+                }
+            ]
+        },
+        "yii\\composer\\Installer::postInstall": {
+            "generateCookieValidationKey": [
+                "config/web.php"
+            ]
+        }
+    },
+    "repositories": [
+        {
+            "type": "composer",
+            "url": "https://asset-packagist.org"
+        }
+    ]
+}

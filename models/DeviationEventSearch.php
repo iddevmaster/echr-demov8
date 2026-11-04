@@ -1,0 +1,75 @@
+<?php
+
+namespace app\models;
+
+use Yii;
+use yii\base\Model;
+use yii\data\ActiveDataProvider;
+use app\models\DeviationEvent;
+
+/**
+ * DeviationEventSearch represents the model behind the search form about `app\models\DeviationEvent`.
+ */
+class DeviationEventSearch extends DeviationEvent
+{
+    /**
+     * @inheritdoc
+     */
+    public function rules()
+    {
+        return [
+            [['id', 'submission_id', 'submission_committee_id', 'submission_event_id', 'is_major_minor_com', 'created_by', 'updated_by'], 'integer'],
+            [['comment', 'deleted', 'created_at', 'updated_at'], 'safe'],
+        ];
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function scenarios()
+    {
+        // bypass scenarios() implementation in the parent class
+        return Model::scenarios();
+    }
+
+    /**
+     * Creates data provider instance with search query applied
+     *
+     * @param array $params
+     *
+     * @return ActiveDataProvider
+     */
+    public function search($params)
+    {
+        $query = DeviationEvent::find();
+
+        $dataProvider = new ActiveDataProvider([
+            'query' => $query,
+        ]);
+
+        $this->load($params);
+
+        if (!$this->validate()) {
+            // uncomment the following line if you do not want to return any records when validation fails
+            // $query->where('0=1');
+            return $dataProvider;
+        }
+
+        $query->andFilterWhere([
+            'id' => $this->id,
+            'submission_id' => $this->submission_id,
+            'submission_committee_id' => $this->submission_committee_id,
+            'submission_event_id' => $this->submission_event_id,
+            'is_major_minor_com' => $this->is_major_minor_com,
+            'created_by' => $this->created_by,
+            'created_at' => $this->created_at,
+            'updated_by' => $this->updated_by,
+            'updated_at' => $this->updated_at,
+        ]);
+
+        $query->andFilterWhere(['like', 'comment', $this->comment])
+            ->andFilterWhere(['like', 'deleted', $this->deleted]);
+
+        return $dataProvider;
+    }
+}

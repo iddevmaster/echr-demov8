@@ -1,0 +1,38 @@
+# Dependencies are installed inside the container (and, in dev, the project is bind-mounted
+# over the image via docker-compose), so there is no need to ship them in the build context.
+/vendor
+/node_modules
+
+# Large archives / database dumps that must never enter the image build context.
+*.zip
+*.rar
+*.gz
+*.sql
+*.sql.gz
+libreoffice/
+libreoffice.zip
+vendor-new.zip
+
+# VCS and IDE metadata
+.git
+.gitignore
+.idea
+nbproject
+.vscode
+.devcontainer
+
+# Runtime, caches, generated assets
+/runtime/*
+!/runtime/.gitignore
+/web/assets/*
+!/web/assets/.gitignore
+/web/tmp/*
+
+# User-uploaded and generated documents (not part of the image)
+/web/uploads
+/web/*.docx
+/web/*.pdf
+
+# OS junk
+Thumbs.db
+.DS_Store

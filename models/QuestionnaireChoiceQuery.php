@@ -1,0 +1,37 @@
+<?php
+
+namespace app\models;
+
+/**
+ * This is the ActiveQuery class for [[QuestionnaireChoice]].
+ *
+ * @see QuestionnaireChoice
+ */
+class QuestionnaireChoiceQuery extends \yii\db\ActiveQuery
+{
+    /*public function active()
+    {
+        return $this->andWhere('[[status]]=1');
+    }*/
+
+    /**
+     * @inheritdoc
+     * @return QuestionnaireChoice[]|array
+     */
+    public function all($db = null)
+    {
+        return parent::all($db);
+    }
+
+    /**
+     * @inheritdoc
+     * @return QuestionnaireChoice|array|null
+     */
+    public function one($db = null)
+    {
+        return parent::one($db);
+    }
+        public function isDeleted($deleted = TRUE) {
+        return $this->andWhere(['questionnaire_choice.deleted' => $deleted]);
+    }
+}

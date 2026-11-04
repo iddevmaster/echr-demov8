@@ -1,0 +1,77 @@
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/*
+    Created on : Mar 11, 2017, 10:37:54 AM
+    Author     : PATIPAT
+*/
+
+@page{
+    margin-left: 5mm;
+    margin-right: 5mm;
+    margin-top: 5mm;
+    margin-bottom: 5mm;
+}
+@media print {
+    body {
+        padding: 0;
+    }
+
+    .wrap > .container {
+        padding: 0;
+    }
+    .wrap > .container-fluid {
+        padding: 0;
+    }
+    #yii-debug-toolbar {
+        display: none !important;
+    }
+
+    .page-header {
+        display: none;
+    }
+
+    .page-header + .page-content.has-page-toolbar {
+        padding: 0 !important;
+    }
+
+    .page-content {
+        padding: 0 !important;
+    }
+
+    .em-08 {
+        font-size: 0.8em;
+    }
+    .em-08-lc {
+        font-size: 10px;
+    }
+
+}
+.width-1p {
+    width: 1%;
+}
+
+table td {
+    line-height: 1.4em;
+}
+.border {
+    border: 1px solid black;
+}
+.border-top {
+    border-top: 1px solid black;
+}
+.border-bottom {
+    border-bottom: 1px solid black;
+}
+.border-left {
+    border-left: 1px solid black;
+}
+.border-right {
+    border-right: 1px solid black;
+}
+
+.border-bottom-white {
+    border-bottom: 1px solid white !important;
+}

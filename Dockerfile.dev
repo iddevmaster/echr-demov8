@@ -1,0 +1,59 @@
+FROM yiisoftware/yii2-php:8.3-apache
+
+# yii2-gii (required transitively by johnitvn/yii2-rbac-plus) only has versions
+# flagged by security advisories, so composer would refuse to install them.
+# Allow them through; gii is a dev-only generator.
+ENV COMPOSER_NO_SECURITY_BLOCKING=1
+
+RUN mkdir -p /usr/share/man/man1
+RUN apt update -y
+RUN apt install -y default-jdk libtidy-dev
+RUN docker-php-ext-install tidy \
+    && docker-php-ext-enable tidy
+RUN cd /usr/local/etc/php/conf.d/ && \
+  echo 'memory_limit = -1' >> /usr/local/etc/php/conf.d/docker-php-ram-limit.ini
+
+# LibreOffice provides the `soffice` binary used by phpdocx transformDocument(..., 'libreoffice')
+# to convert DOCX -> PDF. Install the distro package (compatible with the Debian 13 base of the
+# 8.3 image) instead of the old bundled 6.3 .deb files, which target an older Debian and fail to
+# install here.
+RUN apt install -y --no-install-recommends libreoffice-writer libreoffice-calc
+
+WORKDIR /app/web/echr
+
+#COPY  ./web/assets ./web/assets
+#COPY  ./runtime ./runtime
+#COPY ./yii .
+#COPY ./config/web.php ./config/web.php
+#COPY ./composer.json ./composer.json
+#COPY . .
+#RUN composer global require "fxp/composer-asset-plugin:~1.3"
+#RUN composer install
+
+COPY . .
+
+WORKDIR /app/web/echr
+#RUN apt-get update && \
+# apt-get -y upgrade && \
+# echo 'deb http://ftp.de.debian.org/debian sid main' >> '/etc/apt/sources.list' && \
+# apt-get -y update && \
+# mkdir -p /usr/share/man/man1 && \
+# apt-get -y install openjdk-12-jre-headless
+# Java 8
+#RUN echo "deb http://ppa.launchpad.net/webupd8team/java/ubuntu trusty main" | tee /etc/apt/sources.list.d/webupd8team-java.list
+#RUN echo "deb-src http://ppa.launchpad.net/webupd8team/java/ubuntu trusty main" | tee -a /etc/apt/sources.list.d/webupd8team-java.list
+#RUN apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys EEA14886
+#
+## Gradle
+#RUN echo "deb http://ppa.launchpad.net/cwchien/gradle/ubuntu trusty main" | tee /etc/apt/sources.list.d/cwchien-gradle.list
+#RUN echo "deb-src http://ppa.launchpad.net/cwchien/gradle/ubuntu trusty main" | tee -a /etc/apt/sources.list.d/cwchien-gradle.list
+#RUN apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 9D06AF36
+#
+## Update the container
+#RUN apt-get update --fix-missing && apt-get dist-upgrade -y
+#
+## Install Java 8/Gradle
+#RUN echo oracle-java8-installer shared/accepted-oracle-license-v1-1 select true | /usr/bin/debconf-set-selections
+#RUN apt-get install -y oracle-java8-installer oracle-java8-set-default gradle
+
+# EXPOSE 8080

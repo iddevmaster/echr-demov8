@@ -1,0 +1,120 @@
+<?php
+
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+
+namespace app\controllers\api;
+
+use yii\rest\Controller;
+use app\models\LoginForm;
+use yii\filters\VerbFilter;
+use yii\web\HttpException;
+
+class AuthController extends Controller {
+
+    public function behaviors() {
+        return [
+            'corsFilter' => [
+                'class' => \yii\filters\Cors::class
+            ],
+            'verbs' => [
+                'class' => VerbFilter::className(),
+                'actions' => [
+                    'login' => ['post'],
+                ],
+            ],
+        ];
+    }
+
+    /**
+     * @api {post} /index.php?r=api/auth/login Login เพื่อสร้าง token ให้ client
+     * @apiVersion 1.0.0
+     * @apiName API Login
+     * @apiGroup Auth
+     *
+     * @apiParam {String} username ชื่อผู้ใช้งาน
+     * @apiParam {String} password รหัสผ่านผู้ใช้งาน
+     *
+     * @apiSuccess (Login สำเร็จ) {String} status สถานะของผลการ Login (OK=Login สำเร็จ, ERROR=มีข้อผิดพลาดเกิดขึ้น)
+     * @apiSuccess (Login สำเร็จ) {String} token token สำหรับใช้ในการยืนยันตัวตนในการเรียกใช้งาน API
+     * @apiSuccessExample ตัวอย่างข้อมูล
+     *     HTTP/1.1 200 OK
+     *     {
+     *       "status": "OK",
+     *       "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiIsImp0aSI6IjRmMWcyM2ExMmFhIn0.
+     *                 eyJpc3MiOiJodHRwOlwvXC90cmFuc3BvcnQtcG9ydGFsIiwiYXVkIjoiaHR0cDp
+     *                 cL1wvdHJhbnNwb3J0LXBvcnRhbCIsImp0aSI6IjRmMWcyM2ExMmFhIiwiaWF0Ij
+     *                 oxNTc3Nzg4MzQ1LCJleHAiOjE1Nzc3OTE5NDUsInVpZCI6MX0.5i4NH2YILgdW4
+     *                 tPQQqeRYcSEDbMQKiE_boPNOiBN5j8"
+     *     }
+     *
+     * @apiError (Error) {String} status สถานะของผลการ Login (OK=Login สำเร็จ, ERROR=มีข้อผิดพลาดเกิดขึ้น)
+     * @apiError (Error) {Object[]} errors ข้อผิดพลาด
+     * @apiError (Error) {String} errors.field ชื่อฟิลด์
+     * @apiError (Error) {String} errors.message ข้อความ
+     * 
+     * @apiErrorExample ตัวอย่างข้อมูล
+     *     HTTP/1.1 200 OK
+     *     {
+     *       "status": "ERROR",
+     *       "errors": [{
+     *          "field": "username",
+     *          "message": "กรุณาระบุชื่อผู้ใช้และรหัสผ่าน"
+     *       }]
+     *     }
+     */
+    public function actionLogin() {
+        $response = \Yii::$app->getResponse();
+        $model = new LoginForm();
+        $model->username = \Yii::$app->request->post('username');
+        $model->password = \Yii::$app->request->post('password');
+        if (!isset($model->username) || !isset($model->password)) {
+            $response->setStatusCode(200);
+            return $this->asJson([
+                        'status' => 'ERROR',
+                        'errors' => [
+                            [
+                                'field' => 'username',
+                                'message' => 'กรุณาระบุชื่อผู้ใช้และรหัสผ่าน',
+                            ]
+                        ],
+            ]);
+            //throw new HttpException(500, 'กรุณาระบุชื่อผู้ใช้และรหัสผ่าน');
+        }
+        $user = $model->getUser();
+
+        if (!$user || !$user->validatePassword($model->password)) {
+            $response->setStatusCode(200);
+            return $this->asJson([
+                        'status' => 'ERROR',
+                        'errors' => [
+                            [
+                                'field' => 'password',
+                                'message' => 'ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง',
+                            ]
+                        ],
+            ]);
+            //throw new HttpException(500, 'ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง');
+        }
+        $jwt = \Yii::$app->jwt;
+        $config = $jwt->getConfiguration();
+        $now = new \DateTimeImmutable();
+        $token = $config->builder()
+                ->issuedBy($jwt->issuer)// Configures the issuer (iss claim)
+                ->permittedFor($jwt->audience)// Configures the audience (aud claim)
+                ->identifiedBy($jwt->id)// Configures the id (jti claim)
+                ->issuedAt($now)// Configures the time that the token was issued (iat claim)
+                ->expiresAt($now->modify('+1 hour'))// Configures the expiration time of the token (exp claim)
+                ->withClaim('uid', $user->id)// Configures a new claim, called "uid"
+                ->getToken($config->signer(), $config->signingKey()); // Retrieves the generated token
+
+        return $this->asJson([
+                    'status' => 'OK',
+                    'token' => $token->toString(),
+        ]);
+    }
+
+}
